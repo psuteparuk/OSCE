@@ -14,8 +14,35 @@ function domReady() {
       return;
     }
 
+    // Instruction page
     populateHeader(questions.title, questions.code);
     populateInstructions(questions.problem, questions.instructions);
+
+    // Checklist page
+    addStudentListHandler(students, '.student-selector .selector');
+  }
+
+  function setupNavigation() {
+    var navGroup = document.querySelectorAll('nav a');
+    var pageGroup = document.querySelectorAll('.page');
+
+    var bookmark = window.location.hash;
+    if (bookmark && bookmark[0] === '#') {
+      var selectedLink = document.querySelector('a[name="' + bookmark.substr(1) + '-link"]');
+      var selectedPage = document.querySelector('.page.' + bookmark.substr(1) + '-page');
+      switchGroup(selectedLink, navGroup, 'active', false);
+      switchGroup(selectedPage, pageGroup, 'hidden', true);
+    }
+
+    forEach(navGroup, function(index, link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var correspondingPage = document.querySelector('.page.' + link.getAttribute('href').substr(1) + '-page');
+        switchGroup(link, navGroup, 'active', false);
+        switchGroup(correspondingPage, pageGroup, 'hidden', true);
+        window.location = link.getAttribute('href');
+      });
+    });
   }
 
   // Header
@@ -29,6 +56,61 @@ function domReady() {
     document.querySelector('#main-problem').innerHTML = htmlNewline(htmlEscape(problem));
     document.querySelector('#main-instructions').innerHTML = htmlNewline(htmlEscape(instructions));
   }
+
+  // Students List
+  function populateStudentList(students) {
+    var selectElem = document.querySelector('.student-selector .selector');
+    forEach(students, function(index, student) {
+      var optElem = document.createElement('option');
+      optElem.innerHTML = htmlEscape(student[0] + ' | ' + student[1]);
+      selectElem.appendChild(optElem);
+    });
+  }
+
+  function addStudentListHandler(students, selector) {
+    new autoComplete({
+      selector: selector,
+      minChars: 0,
+      source: function(term, suggest) {
+        term = term.toLowerCase();
+        var choices = students;
+        var suggestions = [];
+        for (var i = 0; i < choices.length; ++i) {
+          if (~(choices[i][0]+' '+choices[i][1]).toLowerCase().indexOf(term))
+            suggestions.push(choices[i]);
+        }
+        suggest(suggestions);
+      },
+      renderItem: function(item, search) {
+        search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
+        return '<div class="autocomplete-suggestion" data-name="'+item[1]+'" data-code="'+item[0]+'" data-val="'+search+'"><span>('+item[0].replace(re, "<b>$1</b>")+')</span> <span>'+item[1].replace(re, "<b>$1</b>")+'</span></div>';
+      },
+      onSelect: function(e, term, item) {
+        var input = document.querySelector(selector);
+        input.value = item.getAttribute('data-name');
+        input.setAttribute('data-code', item.getAttribute('data-code'));
+      }
+    });
+  }
+
+  /* switchGroup helper function: switching between a group of elements,
+   * adding (or removing) className from the selected element in the group
+   */
+
+  function switchGroup(selectedElem, elemGroup, className, isReverse) {
+    isReverse = isReverse || false;
+
+    if (isReverse) {
+      forEach(elemGroup, function(index, elem) { addClass(elem, className); });
+      removeClass(selectedElem, className);
+    } else {
+      forEach(elemGroup, function(index, elem) { removeClass(elem, className); });
+      addClass(selectedElem, className);
+    }
+  }
+
+  /* file parsing methods */
 
   function parseJSON(path, callback) {
     var request = new XMLHttpRequest();
@@ -84,33 +166,58 @@ function domReady() {
     };
   }
 
-  function setupNavigation() {
-    var bookmark = window.location.hash;
-    if (bookmark && bookmark[0] === '#') {
-      var selectedLink = document.querySelector('a[name="' + bookmark.substr(1) + '-link"]');
-      switchPage(selectedLink);
-    }
+  /* Vanilla JS method by Todd Motto (toddmotto.com) */
 
-    forEach(document.querySelectorAll('nav a'), function(index, link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        switchPage(link);
-      });
-    });
+  // forEach method, could be shipped as part of an Object Literal/Module
+
+  function forEach(array, callback, scope) {
+    for (var i = 0; i < array.length; ++i) {
+      callback.call(scope, i, array[i]); // pass back stuff we need
+    }
   }
 
-  function switchPage(elem) {
-    forEach(document.querySelectorAll('nav a'), function(index, link) {
-      removeClass(link, 'active');
-    });
-    addClass(elem, 'active');
+  // class handler
 
-    forEach(document.querySelectorAll('.page'), function(index, page) {
-      addClass(page, 'hidden');
-    });
-    removeClass(document.querySelector('.page.' + elem.getAttribute('href').substr(1) + '-page'), 'hidden');
+  function hasClass(elem, className) {
+    return new RegExp(' ' + className + ' ').test(' ' + elem.className + ' ');
+  }
 
-    window.location = elem.getAttribute('href');
+  function addClass(elem, className) {
+    if (!hasClass(elem, className)) elem.className += ' ' + className;
+  }
+
+  function removeClass(elem, className) {
+    var newClass = ' ' + elem.className.replace(/[\t\r\n]/g, ' ') + ' ';
+    if (hasClass(elem, className)) {
+      while (newClass.indexOf(' ' + className + ' ') >= 0) {
+        newClass = newClass.replace(' ' + className + ' ', ' ');
+      }
+      elem.className = newClass.replace(/^\s+|\s+$/g, '');
+    }
+  }
+
+  /* HTML Escape */
+
+  function htmlEscape(str) {
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+  }
+
+  function htmlUnescape(value) {
+    return String(value)
+            .replace(/&amp;/g, '&')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>');
+  }
+
+  function htmlNewline(str) {
+    return String(str).replace(/(\r\n|\r|\n)/g, '<br>');
   }
 }
 
@@ -129,58 +236,4 @@ else if (document.attachEvent) {
       domReady();
     }
   });
-}
-
-/* Vanilla JS method by Todd Motto (toddmotto.com) */
-
-// forEach method, could be shipped as part of an Object Literal/Module
-
-function forEach(array, callback, scope) {
-  for (var i = 0; i < array.length; ++i) {
-    callback.call(scope, i, array[i]); // pass back stuff we need
-  }
-}
-
-// class handler
-
-function hasClass(elem, className) {
-  return new RegExp(' ' + className + ' ').test(' ' + elem.className + ' ');
-}
-
-function addClass(elem, className) {
-  if (!hasClass(elem, className)) elem.className += ' ' + className;
-}
-
-function removeClass(elem, className) {
-  var newClass = ' ' + elem.className.replace(/[\t\r\n]/g, ' ') + ' ';
-  if (hasClass(elem, className)) {
-    while (newClass.indexOf(' ' + className + ' ') >= 0) {
-      newClass = newClass.replace(' ' + className + ' ', ' ');
-    }
-    elem.className = newClass.replace(/^\s+|\s+$/g, '');
-  }
-}
-
-/* HTML Escape */
-
-function htmlEscape(str) {
-  return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-}
-
-function htmlUnescape(value) {
-  return String(value)
-          .replace(/&amp;/g, '&')
-          .replace(/&quot;/g, '"')
-          .replace(/&#39;/g, "'")
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>');
-}
-
-function htmlNewline(str) {
-  return String(str).replace(/(\r\n|\r|\n)/g, '<br>');
 }
