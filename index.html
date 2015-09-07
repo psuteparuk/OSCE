@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OSCE</title>
+
+    <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, minimun-scale=1, maximum-scale=1'>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="css/grid.css" />
+    <link rel="stylesheet" type="text/css" href="css/base.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+  </head>
+
+  <body>
+    <div class="main" role="main">
+      <!-- Nav -->
+      <div class="navigation">
+        <div class="container-12 clearfix">
+          <div class="grid-12">
+            <nav>
+              <a href="#instructions" name="instructions-link" class="active">โจทย์และคำสั่ง</a>
+              <a href="#equipments" name="equipments-link">อุปกรณ์</a>
+              <a href="#checklist" name="checklist-link">Checklist</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="page instructions-page">
+        <!-- Header -->
+        <div class="header">
+          <div class="container-12 clearfix">
+            <div class="grid-12">
+              <h3 id="title"></h3>
+              <h3 id="code"></h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+          <div class="container-12 clearfix">
+            <div class="grid-12">
+              <h3>โจทย์</h3>
+              <p id="main-problem"></p>
+              <hr>
+              <h3>คำสั่ง</h3>
+              <p id="main-instructions"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page equipments-page">
+      </div>
+
+      <div class="page checklist-page">
+        <!-- Checklist -->
+        <div class="checklist"></div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <script type="text/javascript" src="js/queue.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+  </body>
+</html>

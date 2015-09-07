@@ -1,0 +1,94 @@
+{
+  "title": "ข้อสอบทักษะการตรวจร่างกาย",
+  "code": "P2",
+  "problem": "ผู้ป่วยชาย อายุ 40 ปี มาด้วยอาการปวดท้องส่วนบนและมีไข้ 2 วันก่อนมาโรงพยาบาล",
+  "instructions": "1. จงแสดงการตรวจท้องผู้ป่วยรายนี้เพื่อให้ได้การวินิจฉัย พร้อมรายงานผลสิ่งตรวจพบ (3 นาที)\n2. จงบอกโรค/ภาวะที่เป็นไปได้มากที่สุดมา 1 โรค/อย่าง (1/2 นาที)\n3. จงบอก investigation ทางรังสีที่ควรส่งเพิ่มเติม 1 อย่าง (1/2 นาที)",
+  "children": [
+    {
+      "problem": "การปฏิบัติต่อผู้ป่วยโดยทั่วไป",
+      "children": [
+        {
+          "problem": "แนะนำตัว",
+          "answerType": 1,
+          "exclude": [1]
+        },
+        {
+          "problem": "อธิบายให้ผู้ป่วยทราบถึงสิ่งที่จะทำ",
+          "answerType": 1
+        },
+        {
+          "problem": "กริยาท่าทางสุภาพ",
+          "answerType": 1
+        }
+      ]
+    },
+    {
+      "problem": "เทคนิคการตรวจร่างกาย",
+      "children": [
+        {
+          "problem": "เปิดให้เห็นช่องท้องจากลิ้นปี่ถึงหัวเหน่า",
+          "answerType": 1,
+          "exclude": [1]
+        },
+        {
+          "problem": "สอบถามผู้ป่วยถึงตำแหน่งที่ปวดมาที่สุดและให้ผู้ป่วยชี้",
+          "answerType": 1
+        },
+        {
+          "problem": "ตรวจ ซีด, เหลือง และ sign of chronic liver diseases",
+          "answerType": 1
+        },
+        {
+          "problem": "ดูท้อง",
+          "answerType": 1
+        },
+        {
+          "problem": "ฟังท้องด้วย stethoscope ที่ RLQ หรือ LUQ",
+          "answerType": 1
+        },
+        {
+          "problem": "เคาะทั่วๆไป และ liver dullness",
+          "answerType": 1,
+          "exclude": [1]
+        },
+        {
+          "problem": "คลำตื้นจากตำแหน่งที่ไม่เจ็บก่อน",
+          "answerType": 1
+        },
+        {
+          "problem": "คลำลึก",
+          "answerType": 1
+        },
+        {
+          "problem": "ตรวจ Murphy's sign",
+          "answerType": 1,
+          "exclude": [1]
+        }
+      ]
+    },
+    {
+      "problem": "ผลการตรวจร่างกาย",
+      "children": [
+        {
+          "problem": "ไม่ซีด ไม่เหลือง",
+          "answerType": 1
+        },
+        {
+          "problem": "Murphy's sign positive",
+          "answerType": 1,
+          "exclude": [1]
+        }
+      ]
+    },
+    {
+      "problem": "การวินิจฉัยโรค",
+      "answerType": 2,
+      "answers": ["Acute cholecystitis", "Acute pancreatitis", "อื่นๆ"]
+    },
+    {
+      "problem": "การตรวจทางรังสีที่เหมาะสม",
+      "answerType": 2,
+      "answers": ["Ultrasound abdomen", "CT abdomen", "Acute abdomen", "อื่นๆ"]
+    }
+  ]
+}
