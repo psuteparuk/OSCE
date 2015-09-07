@@ -1,6 +1,7 @@
 function domReady() {
   document.body.className += "javascript";
 
+  preventPullToRefresh();
   setupNavigation();
 
   queue()
@@ -20,6 +21,33 @@ function domReady() {
 
     // Checklist page
     addStudentListHandler(students, '.student-selector .selector');
+  }
+
+  function preventPullToRefresh() {
+    var maybePreventPullToRefresh = false;
+
+    var touchstartHandler = function(e) {
+      if (e.touches.length !== 1) return;
+      lastTouchY = e.touches[0].clientY;
+      maybePreventPullToRefresh = window.pageYOffset === 0;
+    };
+
+    var touchmoveHandler = function(e) {
+      var touchY = e.touches[0].clientY;
+      var touchYDelta = touchY - lastTouchY;
+      lastTouchY = touchY;
+
+      if (maybePreventPullToRefresh) {
+        maybePreventPullToRefresh = false;
+        if (touchYDelta > 0) {
+          e.preventDefault();
+          return;
+        }
+      }
+    };
+
+    document.addEventListener('touchstart', touchstartHandler, false);
+    document.addEventListener('touchmove', touchmoveHandler, false);
   }
 
   function setupNavigation() {
