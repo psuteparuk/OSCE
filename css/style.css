@@ -52,6 +52,8 @@ nav a.active {
 
 /* Checklist Page */
 
+/* Student selector */
+
 .student-selector {
   padding: 1rem 0;
   text-align: center;
@@ -93,6 +95,91 @@ nav a.active {
   text-shadow: 0 0 0 black;
 }
 
+/* Checklist table */
+
+.checklist .topic-title {
+  text-align: center;
+}
+
+.checklist table {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+.checklist td {
+  padding: 0.5rem 0;
+}
+
+.checklist td.numbering-col {
+  width: 15%;
+  text-align: center;
+}
+
+.checklist td.problem-col {
+  width: 40%;
+}
+
+.checklist td.answers-col {
+  width: 45%;
+  text-align: center;
+}
+
+.checklist .answers-group-wrapper {
+  text-align: center;
+}
+
+/* Button Group */
+
+.btn-group {
+  display: inline-block;
+  background-color: #FBFBFB;
+  border: 1px solid rgba(0,0,0,0.5);
+  padding: 0.5rem;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  -webkit-transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
+
+.btn-group:focus,
+.btn-group:active {
+  outline: none;
+}
+
+.btn-group.active {
+  background-color: #999999;
+  color: white;
+  border-color: #999999;
+}
+
+.btn-group.btn-group-correct.active {
+  background-color: #00C96D;
+  color: white;
+  border-color: #00C96D;
+}
+
+.btn-group.btn-group-wrong.active {
+  background-color: #DC143C;
+  color: white;
+  border-color: #DC143C;
+}
+
+.btn-group.btn-group-first {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.btn-group.btn-group-last {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
 /* Auto Complete */
 
 .autocomplete-suggestions {
@@ -113,6 +200,12 @@ nav a.active {
 
 /* Responsive */
 
+@media only screen and (min-width: 720px) and (max-width: 959px) {
+  .checklist table {
+    width: 100%;
+  }
+}
+
 @media only screen and (max-width: 719px) {
   nav {
     font-size: 0.7rem;
@@ -126,6 +219,11 @@ nav a.active {
     display: block;
     margin: 1rem auto 0;
     width: 80%;
+    text-align: center;
+  }
+
+  .checklist table {
+    width: 100%;
   }
 }
 

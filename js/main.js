@@ -1,3 +1,7 @@
+// Constant
+var DEFAULT_ANSWERS = ["ปฏิบัติถูกต้อง", "ปฏิบัติไม่สมบูรณ์", "ไม่ปฏิบัติ"];
+
+// Execute when the DOM is ready
 function domReady() {
   document.body.className += "javascript";
 
@@ -21,6 +25,7 @@ function domReady() {
 
     // Checklist page
     addStudentListHandler(students, '.student-selector .selector');
+    generateForm(questions, '.checklist');
   }
 
   function preventPullToRefresh() {
@@ -75,8 +80,8 @@ function domReady() {
 
   // Header
   function populateHeader(title, code) {
-    document.querySelector('#title').innerHTML = title;
-    document.querySelector('#code').innerHTML = code;
+    document.querySelector('#title').innerHTML = htmlNewline(htmlEscape(title || ""));
+    document.querySelector('#code').innerHTML = htmlNewline(htmlEscape(code || ""));
   }
 
   // Main Instructions
@@ -86,15 +91,6 @@ function domReady() {
   }
 
   // Students List
-  function populateStudentList(students) {
-    var selectElem = document.querySelector('.student-selector .selector');
-    forEach(students, function(index, student) {
-      var optElem = document.createElement('option');
-      optElem.innerHTML = htmlEscape(student[0] + ' | ' + student[1]);
-      selectElem.appendChild(optElem);
-    });
-  }
-
   function addStudentListHandler(students, selector) {
     new autoComplete({
       selector: selector,
@@ -119,6 +115,107 @@ function domReady() {
         input.value = item.getAttribute('data-name');
         input.setAttribute('data-code', item.getAttribute('data-code'));
       }
+    });
+  }
+
+  function generateForm(questions, selector) {
+    var targetDom = document.querySelector(selector);
+
+    forEach(questions.children, function(index, topic) {
+      var container = document.createElement('div');
+      container.className = 'container-12 clearfix';
+      targetDom.appendChild(container);
+
+      var grid = document.createElement('div');
+      grid.className = 'grid-12';
+      container.appendChild(grid);
+
+      var topicElem = document.createElement('h4');
+      topicElem.className = 'topic-title';
+      topicElem.innerHTML = topic.problem ? htmlEscape((index+1)+' '+topic.problem) : "";
+      grid.appendChild(topicElem);
+
+      var table = document.createElement('table');
+      table.setAttribute('cellspacing', 0);
+      grid.appendChild(table);
+
+      generateAnswersGroup(topic, grid, 'div', 'answers-group-wrapper', 'btn-group btn-group-'+(index+1));
+
+      var hr = document.createElement('hr');
+      grid.appendChild(hr);
+
+      generateTableContent(topic.children, table, index+1);
+    });
+  }
+
+  function generateTableContent(children, parentDom, parentNumbering) {
+    if (!children) return;
+
+    forEach(children, function(index, child) {
+      var rowElem = document.createElement('tr');
+      parentDom.appendChild(rowElem);
+
+      var firstColElem = document.createElement('td');
+      firstColElem.className = 'numbering-col';
+      firstColElem.innerHTML = parentNumbering + '.' + (index+1);
+      rowElem.appendChild(firstColElem);
+
+      var secondColElem = document.createElement('td');
+      secondColElem.className = 'problem-col';
+      secondColElem.innerHTML = htmlNewline(htmlEscape(child.problem));
+      rowElem.appendChild(secondColElem);
+
+      generateAnswersGroup(child, rowElem, 'td', 'answers-col answers-group-wrapper', 'btn-group btn-group-'+parentNumbering+'-'+(index+1));
+
+      generateTableContent(children.children, parentDom, parentNumbering+'.'+(index+1));
+    });
+  }
+
+  function generateAnswersGroup(problemObj, parentDom, answersElemType, elemClassName, groupClassName) {
+    if (problemObj.answerType) {
+      var answersElem = document.createElement(answersElemType);
+      answersElem.className = elemClassName || "";
+
+      var answers = [];
+      if (problemObj.answerType === 1) {
+        forEach(DEFAULT_ANSWERS, function(index, ans) {
+          if (!problemObj.exclude || problemObj.exclude.indexOf(index)) answers.push(ans);
+        });
+      } else if (problemObj.answerType === 2) {
+        answers = problemObj.answers;
+      }
+
+      forEach(answers, function(index, ans) {
+        var button = document.createElement('input');
+        button.setAttribute('type', 'button');
+        button.setAttribute('name', groupClassName.split(' ')[0]);
+        button.className = groupClassName || "";
+        if (index === 0) {
+          addClass(button, 'btn-group-first');
+          if (problemObj.answerType === 1) addClass(button, 'btn-group-correct');
+        }
+        if (index === answers.length-1) {
+          addClass(button, 'btn-group-last');
+          if (problemObj.answerType === 1) addClass(button, 'btn-group-wrong');
+        }
+        button.value = htmlEscape(ans);
+        button.setAttribute('data-val', index);
+        answersElem.appendChild(button);
+      });
+
+      parentDom.appendChild(answersElem);
+
+      addBtnGroupHandler(groupClassName);
+    }
+  }
+
+  function addBtnGroupHandler(groupClassName) {
+    var group = document.querySelectorAll('.' + groupClassName.split(' ').join('.'));
+    forEach(group, function(index, btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        switchGroup(btn, group, 'active', false);
+      });
     });
   }
 
