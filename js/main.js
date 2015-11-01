@@ -24,8 +24,12 @@ function domReady() {
     populateInstructions(questions.problem, questions.instructions);
 
     // Checklist page
-    addStudentListHandler(students, '.student-selector .selector');
-    generateForm(questions, '.checklist');
+    var studentChangeEvent = new CustomEvent('student-change');
+    addStudentChangeHandler(questions.code);
+    addStudentListHandler(students, '.student-selector .selector', studentChangeEvent);
+    addStudentClearHandler('.student-selector .clear-selector', '.student-selector .selector', studentChangeEvent);
+    generateForm(questions, '.checklist .checklist-form');
+    defaultStudentListInput(students[0], '.student-selector .selector', studentChangeEvent);
   }
 
   function preventPullToRefresh() {
@@ -91,7 +95,7 @@ function domReady() {
   }
 
   // Students List
-  function addStudentListHandler(students, selector) {
+  function addStudentListHandler(students, selector, studentChangeEvent) {
     new autoComplete({
       selector: selector,
       minChars: 0,
@@ -114,8 +118,84 @@ function domReady() {
         var input = document.querySelector(selector);
         input.value = item.getAttribute('data-name');
         input.setAttribute('data-code', item.getAttribute('data-code'));
+        document.dispatchEvent(studentChangeEvent);
       }
     });
+
+    var checklistForm = document.querySelector('.checklist .checklist-form');
+    var actionButtons = document.querySelector('.checklist .action-buttons');
+    document.querySelector(selector).addEventListener('input', function(e) {
+      addClass(checklistForm, 'hidden');
+      addClass(actionButtons, 'hidden');
+    });
+  }
+
+  function addStudentClearHandler(clearSelector, studentSelector, studentChangeEvent) {
+    var clearDom = document.querySelector(clearSelector);
+    var studentDom = document.querySelector(studentSelector);
+
+    clearDom.addEventListener('click', function(e) {
+      e.preventDefault();
+      studentDom.value = "";
+      studentDom.removeAttribute('data-code');
+      document.dispatchEvent(studentChangeEvent);
+    });
+  }
+
+  function defaultStudentListInput(defaultStudent, selector, studentChangeEvent) {
+    var studentInput = document.querySelector(selector);
+    studentInput.value = defaultStudent[1];
+    studentInput.setAttribute('data-code', defaultStudent[0]);
+    document.dispatchEvent(studentChangeEvent);
+  }
+
+  function addStudentChangeHandler(questionCode) {
+    // TODO: Load from server instead
+    document.addEventListener('student-change', function(e) {
+      queue()
+        .defer(parseCSV, 'result/result_' + questionCode + '.csv')
+        .await(extractResultForStudent);
+    });
+
+    function extractResultForStudent(error, resultData) {
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      var studentCode = document.querySelector('.student-selector .selector').getAttribute('data-code');
+      if (!studentCode) return; // No data-code in the selector (not a valid student)
+
+      var savedResult = [];
+      forEach(resultData, function(index, individualResult) {
+        if (individualResult.length > 1 && individualResult[0] === studentCode){
+          savedResult = individualResult.slice(1);
+        }
+      });
+
+      var checklistForm = document.querySelector('.checklist .checklist-form');
+      var actionButtons = document.querySelector('.checklist .action-buttons');
+
+      // There is previously saved data. Switch button group to corresponding data
+      if (savedResult.length > 0) {
+        var btnGroupList = document.querySelectorAll('.answers-group-wrapper');
+        // Loop through each problem
+        forEach(btnGroupList, function(groupIndex, btnGroup) {
+          var ansCount = 0;
+          // Loop through children of the wrapper class, consider only buttons
+          forEach(btnGroup.childNodes, function(ansIndex, btn) {
+            if (hasClass(btn, 'btn-group')) {
+              ansCount++;
+              if (ansCount === parseInt(savedResult[groupIndex], 10)) addClass(btn, 'active');
+              else removeClass(btn, 'active');
+            }
+          });
+        });
+      }
+
+      removeClass(checklistForm, 'hidden');
+      removeClass(actionButtons, 'hidden');
+    }
   }
 
   function generateForm(questions, selector) {
@@ -139,7 +219,7 @@ function domReady() {
       table.setAttribute('cellspacing', 0);
       grid.appendChild(table);
 
-      generateAnswersGroup(topic, grid, 'div', 'answers-group-wrapper', 'btn-group btn-group-'+(index+1));
+      generateAnswersGroup(topic, grid, 'div', 'answers-group-wrapper', 'btn-group btn-group-'+(index+1), 'btn-group-'+(index+1));
 
       var hr = document.createElement('hr');
       grid.appendChild(hr);
@@ -165,13 +245,13 @@ function domReady() {
       secondColElem.innerHTML = htmlNewline(htmlEscape(child.problem));
       rowElem.appendChild(secondColElem);
 
-      generateAnswersGroup(child, rowElem, 'td', 'answers-col answers-group-wrapper', 'btn-group btn-group-'+parentNumbering+'-'+(index+1));
+      generateAnswersGroup(child, rowElem, 'td', 'answers-col answers-group-wrapper', 'btn-group btn-group-'+parentNumbering+'-'+(index+1), 'btn-group-'+parentNumbering+'-'+(index+1));
 
       generateTableContent(children.children, parentDom, parentNumbering+'.'+(index+1));
     });
   }
 
-  function generateAnswersGroup(problemObj, parentDom, answersElemType, elemClassName, groupClassName) {
+  function generateAnswersGroup(problemObj, parentDom, answersElemType, elemClassName, groupClassName, inputName) {
     if (problemObj.answerType) {
       var answersElem = document.createElement(answersElemType);
       answersElem.className = elemClassName || "";
@@ -188,7 +268,7 @@ function domReady() {
       forEach(answers, function(index, ans) {
         var button = document.createElement('input');
         button.setAttribute('type', 'button');
-        button.setAttribute('name', groupClassName.split(' ')[0]);
+        button.setAttribute('name', inputName);
         button.className = groupClassName || "";
         if (index === 0) {
           addClass(button, 'btn-group-first');

@@ -68,6 +68,17 @@ nav a.active {
   font-size: 1.125rem;
 }
 
+.student-selector .clear-selector {
+  color: #737373;
+  margin-left: 0.3rem;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.student-selector .clear-selector:hover {
+  color: #222222;
+}
+
 .selector {
   background-color: white;
   border: 1px solid #C8C8C8;
@@ -127,15 +138,16 @@ nav a.active {
 
 .checklist .answers-group-wrapper {
   text-align: center;
+  white-space: nowrap;
 }
 
-/* Button Group */
+/* Buttons */
 
+.btn,
 .btn-group {
   display: inline-block;
   background-color: #FBFBFB;
   border: 1px solid rgba(0,0,0,0.5);
-  padding: 0.5rem;
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
@@ -145,6 +157,28 @@ nav a.active {
   user-select: none;
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   -webkit-transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
+
+.btn {
+  border-radius: 6px;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
+.btn:hover {
+  border-color: #FF9009;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.075) inset, 0 0 8px rgba(255, 144, 9, 0.6);
+  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.075) inset, 0 0 8px rgba(255, 144, 9, 0.6);
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn-group {
+  padding: 0.5rem;
 }
 
 .btn-group:focus,
@@ -178,6 +212,25 @@ nav a.active {
 .btn-group.btn-group-last {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
+}
+
+/* Action Buttons */
+
+.action-buttons {
+  text-align: center;
+}
+
+.action-buttons .btn {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem 1rem;
+}
+
+.action-buttons .btn-prev,
+.action-buttons .btn-next {
+  background-color: #FF9009;
+  border-color: #FF9009;
+  color: white;
 }
 
 /* Auto Complete */
@@ -222,60 +275,15 @@ nav a.active {
     text-align: center;
   }
 
+  .student-selector .clear-selector {
+    display: block;
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+
   .checklist table {
     width: 100%;
   }
-}
-
-/* Radio */
-
-.radio-inline {
-  position: relative;
-  display: inline-block;
-  padding-left: 1.2rem;
-  margin-right: 0.8rem;
-  margin-bottom: 0;
-  vertical-align: middle;
-  cursor: pointer;
-}
-
-.radio-inline input[type=radio] {
-  position: absolute;
-  margin-top: 0.2rem;
-  margin-left: -1.2rem;
-  line-height: normal;
-}
-
-/* Button */
-
-.btn {
-  display: inline-block;
-  /*background-color: #2BA6CB;*/
-  background-color: #FBFBFB;
-  border: 1px solid rgba(0,0,0,0.5);
-  border-radius: 6px;
-  width: 100%;
-  padding: 1rem 2rem;
-  font-size: 1.125rem;
-  text-align: center;
-  white-space: nowrap;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
-  -webkit-transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
-}
-
-.btn:hover {
-  border-color: #FF9009;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.075) inset, 0 0 8px rgba(255, 144, 9, 0.6);
-  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.075) inset, 0 0 8px rgba(255, 144, 9, 0.6);
-}
-
-.btn:focus {
-  outline: none;
 }
 
 /* Panel */
