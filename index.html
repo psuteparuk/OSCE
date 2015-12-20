@@ -25,9 +25,9 @@
         <div class="container-12 clearfix">
           <div class="grid-12">
             <nav>
-              <a href="#instructions" name="instructions-link" class="active">โจทย์และคำสั่ง</a>
-              <a href="#equipments" name="equipments-link">อุปกรณ์</a>
-              <a href="#checklist" name="checklist-link">Checklist</a>
+              <a href="#/instructions" name="instructions-link" class="active">โจทย์และคำสั่ง</a>
+              <a href="#/equipments" name="equipments-link">อุปกรณ์</a>
+              <a href="#/checklist" name="checklist-link">Checklist</a>
             </nav>
           </div>
         </div>
@@ -85,8 +85,64 @@
 
     <div class="clearfix"></div>
 
-    <script type="text/javascript" src="js/auto-complete.min.js"></script>
-    <script type="text/javascript" src="js/queue.min.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/lib/auto-complete.min.js"></script>
+    <script type="text/javascript" src="js/lib/queue.min.js"></script>
+    <script type="text/javascript" src="js/lib/path.min.js"></script>
+    <script type="text/javascript" src="js/util.js"></script>
+    <script type="text/javascript" src="js/models/student.js"></script>
+    <script type="text/javascript" src="js/models/question.js"></script>
+    <script type="text/javascript" src="js/views/instructionsView.js"></script>
+    <script type="text/javascript" src="js/views/checklistView.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript">
+      (function preventPullToRefresh() {
+        var maybePreventPullToRefresh = false;
+
+        var touchstartHandler = function(e) {
+          if (e.touches.length !== 1) return;
+          lastTouchY = e.touches[0].clientY;
+          maybePreventPullToRefresh = window.pageYOffset === 0;
+        };
+
+        var touchmoveHandler = function(e) {
+          var touchY = e.touches[0].clientY;
+          var touchYDelta = touchY - lastTouchY;
+          lastTouchY = touchY;
+
+          if (maybePreventPullToRefresh) {
+            maybePreventPullToRefresh = false;
+            if (touchYDelta > 0) {
+              e.preventDefault();
+              return;
+            }
+          }
+        };
+
+        document.addEventListener('touchstart', touchstartHandler, false);
+        document.addEventListener('touchmove', touchmoveHandler, false);
+      })();
+
+      var questionsFilePath = 'data/questions.json';
+      var studentsFilePath = 'data/students.csv';
+
+      var app = new App(questionsFilePath, studentsFilePath);
+
+      // Mozilla, Opera, Webkit
+      if (document.addEventListener) {
+        document.addEventListener("DOMContentLoaded", function() {
+          document.removeEventListener("DOMContentLoaded", arguments.callee, false);
+          app.init();
+        });
+      }
+      // If IE event model is used
+      else if (document.attachEvent) {
+        document.attachEvent("onreadystatechange", function() {
+          if (document.readyState === "complete") {
+            document.detachEvent("onreadystatechange", arguments.callee);
+            app.init();
+          }
+        });
+      }
+    </script>
   </body>
 </html>
