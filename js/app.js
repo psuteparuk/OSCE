@@ -54,5 +54,7 @@ App.prototype.setupNavigation = function() {
     });
   });
 
+  Path.root('#/instructions');
+
   Path.listen();
 };
