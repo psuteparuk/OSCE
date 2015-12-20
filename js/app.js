@@ -37,11 +37,9 @@ App.prototype.setupNavigation = function() {
 
   forEach(navGroup, function(index, link) {
     link.addEventListener('click', function(e) {
-      e.preventDefault();
       var correspondingPage = document.querySelector('.page.' + link.getAttribute('href').substr(2) + '-page');
       switchGroup(link, navGroup, 'active', false);
       switchGroup(correspondingPage, pageGroup, 'hidden', true);
-      window.location = link.getAttribute('href');
     });
   });
 
